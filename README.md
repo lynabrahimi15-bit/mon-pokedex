@@ -2,8 +2,8 @@
 
 Application React qui affiche les pokémons de [PokéAPI](https://pokeapi.co) avec pagination, fiche détail, recherche, favoris et un formulaire pour créer ses propres pokémons.
 
-- **Site en ligne :** _à compléter après le déploiement (https://….vercel.app)_
-- **Dépôt GitHub :** _à compléter_
+- **Site en ligne :** https://mon-pokedex-beige.vercel.app/
+- **Dépôt GitHub :** https://github.com/lynabrahimi15-bit/mon-pokedex
 
 ## Stack
 
@@ -61,20 +61,12 @@ Pour utiliser une autre API (une API Symfony par exemple), il suffit de changer 
 
 ### 1. Mise en ligne et pipeline CI/CD
 
-Le fichier `.github/workflows/ci-cd.yml` définit deux jobs :
+Le site est hébergé sur **Vercel**, relié au dépôt GitHub.
 
-1. **CI** (à chaque push et à chaque Pull Request) : `npm ci`, puis `lint`, `test` et `build`. Si une étape échoue, la pipeline s'arrête.
-2. **CD** (sur `main` uniquement, et seulement si la CI est verte) : build et déploiement en production sur Vercel avec la CLI Vercel.
-
-Dans `vercel.json`, `git.deploymentEnabled: false` désactive les déploiements automatiques de Vercel. Seule la pipeline déploie, ce qui garantit que **rien n'est mis en ligne sans que les tests passent**. Le fichier contient aussi une règle de réécriture vers `index.html` pour que les URL comme `/poke/25` fonctionnent quand on recharge la page.
-
-**Mise en place, à faire une seule fois :**
-1. Pousser le projet sur GitHub.
-2. Sur vercel.com : *Add New → Project*, importer le dépôt, puis *Deploy* (le framework Vite est détecté tout seul).
-3. Sur ton ordinateur, dans le dossier du projet : `npx vercel link`. Ouvre ensuite `.vercel/project.json` pour récupérer `orgId` et `projectId`.
-4. Sur vercel.com : *Account Settings → Tokens*, puis créer un token.
-5. Sur GitHub : *Settings → Secrets and variables → Actions*, puis ajouter `VERCEL_TOKEN`, `VERCEL_ORG_ID` et `VERCEL_PROJECT_ID`.
-6. Pousser sur `main`, puis suivre la pipeline dans l'onglet *Actions*.
+- **CI (intégration continue)** : le fichier `.github/workflows/ci-cd.yml` lance GitHub Actions à chaque push et à chaque Pull Request. Il fait `npm ci`, puis `lint`, `test` et `build`. Si une étape échoue, le commit ou la Pull Request est marqué en rouge.
+- **CD (déploiement continu)** : Vercel déploie automatiquement chaque push sur `main` en production. Chaque Pull Request obtient aussi sa propre URL de prévisualisation pour tester avant de fusionner.
+- Avec une règle de protection de la branche `main` (« Require status checks to pass »), on peut obliger la CI à être verte avant toute fusion : rien n'arrive en production sans que les tests passent.
+- `vercel.json` contient une règle de réécriture vers `index.html`, pour que les URL comme `/poke/25` fonctionnent quand on recharge la page. La fonction `api/pokemons.js` est déployée automatiquement par Vercel comme fonction serverless.
 
 ### 2. Tests (unitaires et fonctionnels)
 
